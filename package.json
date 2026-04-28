@@ -1,0 +1,9 @@
+{
+  "name": "chessplay",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chessplay frontend plus admin portal and JSON-backed backend",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
