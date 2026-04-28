@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Pro Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1b254b; margin: 0; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #4f46e5; }
+        input:checked + .slider:before { transform: translateX(20px); }
+    </style>
+</head>
+<body class="min-h-screen bg-[#f4f7ff] p-6 md:p-10">
+    <div id="admin-login" class="max-w-md mx-auto bg-white p-10 rounded-[45px] shadow-2xl border border-slate-100">
+        <div class="w-20 h-20 bg-[#1b254b] rounded-[28px] flex items-center justify-center mx-auto mb-6">
+            <i data-lucide="shield-check" class="text-white w-10 h-10"></i>
+        </div>
+        <h1 class="text-3xl font-black uppercase tracking-tight text-center mb-2">Admin Portal</h1>
+        <p class="text-center text-[10px] font-black uppercase text-slate-400 tracking-widest mb-8">Backend-only management site</p>
+        <div class="space-y-4">
+            <input type="text" id="admin-user" placeholder="Admin username" class="w-full h-14 bg-slate-50 rounded-xl px-5 font-bold outline-none border-2 border-transparent focus:border-indigo-500">
+            <input type="password" id="admin-pass" placeholder="Admin password" class="w-full h-14 bg-slate-50 rounded-xl px-5 font-bold outline-none border-2 border-transparent focus:border-indigo-500">
+            <input type="password" id="admin-pin" maxlength="4" placeholder="4-digit admin code" class="w-full h-14 bg-slate-50 rounded-xl px-5 font-bold outline-none border-2 border-transparent focus:border-indigo-500">
+            <p id="admin-login-error" class="hidden text-xs font-bold text-red-500 uppercase tracking-widest">Login failed</p>
+            <button onclick="adminLogin()" class="w-full h-16 bg-[#1b254b] text-white rounded-2xl font-black uppercase tracking-widest">Enter Admin</button>
+        </div>
+    </div>
+
+    <div id="admin-app" class="hidden max-w-6xl mx-auto">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Secure backend panel</p>
+                <h2 class="text-3xl font-black uppercase tracking-tight">Chess Pro Admin</h2>
+            </div>
+            <div class="flex gap-3">
+                <a href="/" class="h-12 px-5 bg-white border border-slate-200 rounded-2xl font-black uppercase text-xs tracking-widest flex items-center">Open Player Site</a>
+                <button onclick="adminLogout()" class="h-12 px-5 bg-[#1b254b] text-white rounded-2xl font-black uppercase text-xs tracking-widest">Logout</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="space-y-8">
+                <div class="bg-white p-10 rounded-[45px] shadow-sm border border-slate-100">
+                    <h3 class="text-sm font-black uppercase mb-8 flex items-center gap-2"><i data-lucide="user-plus" class="w-4 h-4"></i> Create Account</h3>
+                    <div class="space-y-4">
+                        <input type="text" id="new-user" placeholder="Username" class="w-full h-14 bg-slate-50 rounded-xl px-5 font-bold outline-none border-2 border-transparent focus:border-indigo-500">
+                        <input type="password" id="new-pass" placeholder="Password" class="w-full h-14 bg-slate-50 rounded-xl px-5 font-bold outline-none border-2 border-transparent focus:border-indigo-500">
+                        <div class="flex items-center gap-4">
+                            <select id="new-avatar" class="flex-1 h-14 bg-slate-50 rounded-xl px-5 font-bold outline-none border-2 border-transparent focus:border-indigo-500">
+                                <option value="👤">👤 Human</option>
+                                <option value="🤖">🤖 Robot</option>
+                                <option value="🦊">🦊 Fox</option>
+                                <option value="👑">👑 Crown</option>
+                                <option value="♟️">♟️ Pawn</option>
+                            </select>
+                            <div class="flex items-center gap-2 px-4 py-3 bg-slate-50 rounded-xl">
+                                <span class="text-[10px] font-black uppercase text-slate-400">Admin?</span>
+                                <label class="switch"><input type="checkbox" id="new-is-admin"><span class="slider"></span></label>
+                            </div>
+                        </div>
+                        <button onclick="createNewAccount()" class="w-full h-16 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-indigo-100">Add User</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-10 rounded-[45px] shadow-sm border border-slate-100">
+                    <h3 class="text-sm font-black uppercase mb-8 flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4"></i> Global Security</h3>
+                    <div class="space-y-4">
+                        <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Change Admin 2FA PIN</p>
+                        <input type="password" id="admin-pin-change" maxlength="4" placeholder="New 4-digit PIN" class="w-full h-14 bg-slate-50 rounded-xl px-5 font-bold outline-none border-2 border-transparent focus:border-indigo-500">
+                        <button onclick="changeAdminPin()" class="w-full h-14 bg-[#1b254b] text-white rounded-xl font-black uppercase text-xs tracking-widest">Update Security PIN</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-10 rounded-[45px] shadow-sm border border-slate-100 flex flex-col">
+                <h3 class="text-sm font-black uppercase mb-2 flex items-center gap-2"><i data-lucide="users" class="w-4 h-4"></i> User Directory</h3>
+                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-6">Click a user to manage profile</p>
+                <div id="user-list" class="space-y-3 flex-1 overflow-y-auto max-h-[600px] pr-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="user-editor-modal" class="modal-overlay hidden">
+        <div class="bg-white w-full max-w-md p-10 rounded-[45px] shadow-2xl relative">
+            <button onclick="closeUserModal()" class="absolute top-8 right-8 text-slate-300 hover:text-slate-600"><i data-lucide="x"></i></button>
+            <h3 class="text-2xl font-black uppercase tracking-tight mb-8">Edit User Profile</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-1">Username</label>
+                    <input type="text" id="edit-user-name" class="w-full h-14 bg-slate-50 rounded-xl px-5 font-bold outline-none border-2 border-transparent focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-1">New Password</label>
+                    <input type="password" id="edit-user-pass" placeholder="Leave blank to keep current" class="w-full h-14 bg-slate-50 rounded-xl px-5 font-bold outline-none border-2 border-transparent focus:border-indigo-500">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-1">Avatar</label>
+                        <select id="edit-user-avatar" class="w-full h-14 bg-slate-50 rounded-xl px-5 font-bold outline-none border-2 border-transparent focus:border-indigo-500">
+                            <option value="👤">👤 Human</option>
+                            <option value="🤖">🤖 Robot</option>
+                            <option value="🦊">🦊 Fox</option>
+                            <option value="👑">👑 Crown</option>
+                            <option value="♟️">♟️ Pawn</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1">Admin Access</label>
+                        <div class="h-14 bg-slate-50 rounded-xl px-5 flex items-center justify-between">
+                            <span class="text-[10px] font-bold uppercase">Grant</span>
+                            <label class="switch"><input type="checkbox" id="edit-user-admin"><span class="slider"></span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="pt-4 flex gap-4">
+                    <button onclick="deleteUser()" class="flex-1 h-16 bg-red-50 text-red-500 rounded-2xl font-black uppercase tracking-widest text-xs">Delete</button>
+                    <button onclick="saveUserChanges()" class="flex-[2] h-16 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-indigo-100">Save Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/admin/admin.js"></script>
+</body>
+</html>
