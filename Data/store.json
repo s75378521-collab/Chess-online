@@ -1,0 +1,144 @@
+{
+  "config": {
+    "nextUserId": 8,
+    "adminPinHash": "9af15b336e6a9619928537df30b2e6a2376569fcf9d7e773eccede65606529a0"
+  },
+  "users": [
+    {
+      "id": 0,
+      "name": "Spencer",
+      "passwordHash": "65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5",
+      "role": "Admin",
+      "avatar": "👤",
+      "preferences": {
+        "hints": true,
+        "darkMode": false,
+        "difficulty": "Easy",
+        "preferredColor": "random",
+        "showCoordinates": true,
+        "moveAnimations": true,
+        "animationSpeed": "normal",
+        "boardTheme": "classic"
+      },
+      "history": [
+        {
+          "opponent": "TestMate",
+          "result": "Victory",
+          "playedAt": "2026-04-22T15:15:47.293Z"
+        },
+        {
+          "opponent": "darren",
+          "result": "Defeat",
+          "playedAt": "2026-04-22T16:29:46.542Z"
+        },
+        {
+          "opponent": "brayden",
+          "result": "Victory",
+          "playedAt": "2026-04-22T17:11:10.398Z"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Grandmaster_01",
+      "passwordHash": "ac739dccd121f71261d87461256e9ca70d8e3b6dbbcc9076d5f3b50c73a5d22d",
+      "role": "Player",
+      "avatar": "👑",
+      "preferences": {
+        "hints": true,
+        "darkMode": false,
+        "difficulty": "Easy",
+        "preferredColor": "random"
+      },
+      "history": []
+    },
+    {
+      "id": 2,
+      "name": "AlphaBot",
+      "passwordHash": "20f5691fd825a070a6c88d303a7a24087d07c3bc295fded4b6334e4929646c43",
+      "role": "Player",
+      "avatar": "🤖",
+      "preferences": {
+        "hints": true,
+        "darkMode": false,
+        "difficulty": "Easy",
+        "preferredColor": "random"
+      },
+      "history": []
+    },
+    {
+      "id": 4,
+      "name": "TestMate",
+      "passwordHash": "432bda610a51ad873141f9a27c4970d8bbb89a98c853b4a04b2eb8e2eecdbd71",
+      "role": "Player",
+      "avatar": "?",
+      "preferences": {
+        "hints": true,
+        "darkMode": false,
+        "difficulty": "Easy",
+        "preferredColor": "random"
+      },
+      "history": [
+        {
+          "opponent": "Spencer",
+          "result": "Defeat",
+          "playedAt": "2026-04-22T15:15:47.293Z"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "bob",
+      "passwordHash": "2744ccd10c7533bd736ad890f9dd5cab2adb27b07d500b9493f29cdc420cb2e0",
+      "role": "Player",
+      "avatar": "👤",
+      "preferences": {
+        "hints": true,
+        "darkMode": false,
+        "difficulty": "Easy",
+        "preferredColor": "random"
+      },
+      "history": []
+    },
+    {
+      "id": 6,
+      "name": "darren",
+      "passwordHash": "65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5",
+      "role": "Player",
+      "avatar": "👤",
+      "preferences": {
+        "hints": true,
+        "darkMode": false,
+        "difficulty": "Easy",
+        "preferredColor": "random"
+      },
+      "history": [
+        {
+          "opponent": "Spencer",
+          "result": "Victory",
+          "playedAt": "2026-04-22T16:29:46.542Z"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "brayden",
+      "passwordHash": "ac739dccd121f71261d87461256e9ca70d8e3b6dbbcc9076d5f3b50c73a5d22d",
+      "role": "Player",
+      "avatar": "👤",
+      "preferences": {
+        "hints": true,
+        "darkMode": false,
+        "difficulty": "Easy",
+        "preferredColor": "random"
+      },
+      "history": [
+        {
+          "opponent": "Spencer",
+          "result": "Defeat",
+          "playedAt": "2026-04-22T17:11:10.398Z"
+        }
+      ]
+    }
+  ]
+}
