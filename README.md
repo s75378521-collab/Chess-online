@@ -52,6 +52,6 @@ Then open:
 
 - Username: `Spencer`
 - Password: `qwerty`
-- Admin PIN: `0000`
+
 
 Change the PIN from the admin portal after logging in.
