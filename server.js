@@ -48,6 +48,9 @@ const defaultStore = {
     ]
 };
 
+const userById = new Map();
+const userByNameLower = new Map();
+
 ensureStore();
 
 function ensureStore() {
@@ -57,12 +60,24 @@ function ensureStore() {
     }
 }
 
+function rebuildUserIndexes(users) {
+    userById.clear();
+    userByNameLower.clear();
+    users.forEach(user => {
+        userById.set(user.id, user);
+        userByNameLower.set(user.name.toLowerCase(), user);
+    });
+}
+
 function loadStore() {
-    return JSON.parse(fs.readFileSync(storePath, "utf8"));
+    const store = JSON.parse(fs.readFileSync(storePath, "utf8"));
+    rebuildUserIndexes(store.users);
+    return store;
 }
 
 function saveStore(store) {
     fs.writeFileSync(storePath, JSON.stringify(store, null, 2));
+    rebuildUserIndexes(store.users);
 }
 
 function hashValue(value) {
@@ -121,7 +136,7 @@ function readAuthToken(req) {
 function requireUser(req, res, store) {
     const token = readAuthToken(req);
     const userId = token ? sessions.get(token) : null;
-    const user = store.users.find(item => item.id === userId);
+    const user = userId != null ? userById.get(userId) : undefined;
     if (!user) {
         json(res, 401, { error: "Unauthorized" });
         return null;
@@ -132,7 +147,7 @@ function requireUser(req, res, store) {
 function requireAdmin(req, res, store) {
     const token = req.headers["x-admin-token"];
     const userId = token ? adminSessions.get(token) : null;
-    const user = store.users.find(item => item.id === userId);
+    const user = userId != null ? userById.get(userId) : undefined;
     if (!user || user.role !== "Admin") {
         json(res, 401, { error: "Admin authorization required" });
         return null;
@@ -450,8 +465,8 @@ function findMoveFromRequest(room, moveRequest) {
 }
 
 function buildRoomSummary(room, user, store) {
-    const whiteUser = store.users.find(item => item.id === room.whiteUserId) || null;
-    const blackUser = store.users.find(item => item.id === room.blackUserId) || null;
+    const whiteUser = userById.get(room.whiteUserId) || null;
+    const blackUser = userById.get(room.blackUserId) || null;
     const playerColor = room.whiteUserId === user.id ? "white" : room.blackUserId === user.id ? "black" : null;
     const opponent = playerColor === "white" ? blackUser : playerColor === "black" ? whiteUser : null;
 
@@ -478,8 +493,8 @@ function recordRoomResult(store, room) {
         return;
     }
 
-    const whiteUser = store.users.find(item => item.id === room.whiteUserId);
-    const blackUser = store.users.find(item => item.id === room.blackUserId);
+    const whiteUser = userById.get(room.whiteUserId);
+    const blackUser = userById.get(room.blackUserId);
     if (!whiteUser || !blackUser) {
         return;
     }
@@ -531,7 +546,7 @@ async function handleApi(req, res, store) {
 
     if (pathname === "/api/login" && req.method === "POST") {
         const body = await parseBody(req);
-        const user = store.users.find(item => item.name.toLowerCase() === String(body.username || "").toLowerCase());
+        const user = userByNameLower.get(String(body.username || "").toLowerCase());
         if (!user || user.passwordHash !== hashValue(String(body.password || ""))) {
             json(res, 401, { error: "Invalid username or password" });
             return;
@@ -749,7 +764,7 @@ async function handleApi(req, res, store) {
 
     if (pathname === "/api/admin/login" && req.method === "POST") {
         const body = await parseBody(req);
-        const user = store.users.find(item => item.name.toLowerCase() === String(body.username || "").toLowerCase());
+        const user = userByNameLower.get(String(body.username || "").toLowerCase());
         const validPin = /^\d{4}$/.test(String(body.pin || "")) && store.config.adminPinHash === hashValue(String(body.pin));
         if (!user || user.role !== "Admin" || user.passwordHash !== hashValue(String(body.password || "")) || !validPin) {
             json(res, 401, { error: "Invalid admin credentials or PIN" });
@@ -787,7 +802,7 @@ async function handleApi(req, res, store) {
             json(res, 400, { error: "Username and password are required" });
             return;
         }
-        const exists = store.users.some(user => user.name.toLowerCase() === name.toLowerCase());
+        const exists = userByNameLower.has(name.toLowerCase());
         if (exists) {
             json(res, 400, { error: "That username already exists" });
             return;
@@ -813,7 +828,7 @@ async function handleApi(req, res, store) {
             return;
         }
         const userId = Number(pathname.split("/").pop());
-        const user = store.users.find(item => item.id === userId);
+        const user = userById.get(userId);
         if (!user) {
             notFound(res);
             return;
@@ -840,12 +855,11 @@ async function handleApi(req, res, store) {
             json(res, 400, { error: "You cannot delete your own admin account" });
             return;
         }
-        const nextUsers = store.users.filter(user => user.id !== userId);
-        if (nextUsers.length === store.users.length) {
+        if (!userById.has(userId)) {
             notFound(res);
             return;
         }
-        store.users = nextUsers;
+        store.users = store.users.filter(user => user.id !== userId);
         saveStore(store);
         json(res, 200, { ok: true });
         return;
